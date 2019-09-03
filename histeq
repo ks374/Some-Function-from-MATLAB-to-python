@@ -1,0 +1,35 @@
+def new_hist(varuse,wgafile,path4,path4a):
+    hgram4 = varuse / sum(varuse)
+    A = mpimg.imread(wgafile)
+    hist,bins = np.histogram(A.ravel(),256,[0,255])
+    hist_cum = np.cumsum(hist)
+    a = np.array(hist[0])
+    b = hgram4*(sum(hist)-hist[0])
+    hgram4a = np.concatenate((a,b),axis=None)
+    
+    constructed = np.array([])
+    for i in range(256):
+        constructed = np.concatenate((constructed,np.array(i*np.ones(int(np.round(hgram4a[i]))))),axis=None)
+    InCaseShort = 255 * np.ones(300)
+    constructed = np.concatenate((constructed,InCaseShort),axis=None)
+    
+    new = np.array(range(256))
+    for i in range(256):
+        if i == 0:
+            first = 0
+        else:
+            first = hist_cum[i-1]
+        second = hist_cum[i]
+        result = np.average(constructed[first:second])
+        new[i] = np.round(result)
+
+    B = A.ravel()
+    C = new[B]
+    C = C.reshape(6400,6400)
+    D = imresize(C,(640,640))
+    name = wgafile.split('\\')
+    name = name[-1]
+    imsave(path4 + name , C)
+    imsave(path4a + name , D)
+
+    return 0
